@@ -158,6 +158,81 @@ function Tree(arr) {
       return null;
     }
 
+    const breadthFirstTraversal = (callback) => {
+      // let curr = root;
+      const queue = [];
+      let curr = null;
+      queue.push(root);
+      while (queue.length > 0) {
+        curr = queue.shift();
+        callback(curr);
+        if (curr.left != null) {
+          queue.push(curr.left);
+        }
+        if (curr.right != null) {
+          queue.push(curr.right)
+        }
+      }
+    }
+
+    const preOrderTraversal = () => {
+      const stack = [root];
+      let curr = null;
+      while (stack.length > 0) {
+        curr = stack.pop();
+        console.log(curr.data);
+        if (curr.right != null) {
+          stack.push(curr.right);
+        }
+        if (curr.left != null) {
+          stack.push(curr.left);
+        }
+      }
+    }
+
+    const inOrderTraversal = (callback) => {
+      const stack = [];
+      let curr = root;
+      let temp = null;
+      while (curr || stack.length > 0) {
+        while (curr) {
+          stack.push(curr);
+          curr = curr.left;
+        }
+        temp = stack.pop()
+        callback(temp.data);
+        curr = temp.right;
+      }
+    }
+
+    const preOrderTraversalRecursive = (callback, node) => {
+      if (node == null) {
+        return null;
+      }
+      callback(node.data);
+      preOrderTraversalRecursive(callback, node.left);
+      preOrderTraversalRecursive(callback, node.right);
+    }
+
+    const inOrderTraversalRecursive = (callback, node) => {
+      if (node == null) {
+        return null;
+      }
+      inOrderTraversalRecursive(callback, node.left);
+      callback(node.data);
+      inOrderTraversalRecursive(callback, node.right);
+    }
+
+    const postOrderTraversalRecursive = (callback, node) => {
+      if (node == null) {
+        return null;
+      }
+      postOrderTraversalRecursive(callback, node.left);
+      postOrderTraversalRecursive(callback, node.right);
+      callback(node.data);
+    }
+
+
     const prettyPrint = (node, prefix = '', isLeft = true) => {
         if (node === null) {
           return;
@@ -172,21 +247,23 @@ function Tree(arr) {
       };
       
 
-    return {root, insert, find, deleteNode, prettyPrint};
+    return {root, insert, find, deleteNode, breadthFirstTraversal, inOrderTraversal, preOrderTraversalRecursive, inOrderTraversalRecursive, postOrderTraversalRecursive, prettyPrint};
 }
 
 
 let temp = Tree([1, 10, 3, 4, 6, 1, 5, 2]); // Testing with duplicates and mixed-digit numbers
 // console.log(temp.root);
 // temp.prettyPrint(temp.root);
-temp.insert(11);
-temp.insert(12);
-temp.insert(13);
-temp.insert(9);
-temp.insert(8);
-temp.insert(0);
+// temp.insert(11);
+// temp.insert(12);
+// // temp.insert(13);
+// temp.insert(9);
+// temp.insert(8);
+// temp.insert(0);
 
 temp.prettyPrint(temp.root);
+// temp.breadthFirstTraversal();
+// temp.inOrderTraversal();
 // console.log(temp.find(3));
 // console.log(temp.find(1));
 // console.log(temp.find(6));
@@ -195,11 +272,17 @@ temp.prettyPrint(temp.root);
 // console.log(temp.find(14));
 
 
-temp.deleteNode(8);
-temp.deleteNode(13);
-temp.deleteNode(0);
+// temp.deleteNode(8);
+// temp.deleteNode(13);
+// temp.deleteNode(0);
 
-temp.deleteNode(11);
-temp.deleteNode(4);
+// temp.deleteNode(11);
+// temp.deleteNode(4);
 
-temp.prettyPrint(temp.root);
+// temp.prettyPrint(temp.root);
+
+
+// temp.preOrderTraversalRecursive(temp.root);
+// temp.inOrderTraversalRecursive(temp.root);
+// temp.postOrderTraversalRecursive(temp.root);
+
