@@ -1,63 +1,71 @@
 import { Node } from "./node.js";
 
 function Tree(arr) {
-    const array = arr;
+  const array = arr;
 
-    const buildTree = () => {
-        const sortedArray = sortArray(array);
-        return arrayToBST(sortedArray, 0, sortedArray.length - 1);
+  function sortArray(arr) {
+    // Sort and remove duplicates
+    let sorted = arr.sort((a,b) => a-b);
+    return sorted.filter((item, index) => sorted.indexOf(item) == index);
+  }
+
+
+  function arrayToBST(array, start, end) {
+    if (start > end) {
+      return null;
     }
+    // Middle element to serve as root
+    let mid = Math.floor((start+end) / 2);
+    let newNode = Node(array[mid]);
+
+    newNode.left = arrayToBST(array, start, mid-1);
+    newNode.right = arrayToBST(array, mid+1, end);
+
+    return newNode;
+  }
+
+  function buildTree() {
+    const sortedArray = sortArray(array);
+    return arrayToBST(sortedArray, 0, sortedArray.length - 1);
+}
+
+    // const buildTreeSorted = (arr) => {
+    //   return arrayToBST(arr, 0, arr.length-1);
+    // }
     
-    const sortArray = (arr) => {
-        // Sort and remove duplicated
-        let sorted = arr.sort((a,b) => a-b);
-        return sorted.filter((item, index) => sorted.indexOf(item) == index);
-    }
  // [1,2,3,4,5,6,7]
-    const arrayToBST = (array, start, end) => {
-        if (start > end) {
-            return null;
-        }
-        let mid = Math.floor((start+end) / 2);
-        let newNode = Node(array[mid]);
 
-        newNode.left = arrayToBST(array, start, mid-1);
-        newNode.right = arrayToBST(array, mid+1, end);
+  let root = buildTree();
 
-        return newNode;
+
+  const insert = (value) => {
+    let curr = root;
+    // console.log(curr);
+    while (curr != null) {
+      
+      if (curr.data > value && curr.left != null) {
+        curr = curr.left;
+      }
+      else if (curr.data < value && curr.right != null) {
+        curr = curr.right;
+      }
+      else break;
     }
-
-    const root = buildTree();
-
-
-    const insert = (value) => {
-      let curr = root;
-      // console.log(curr);
-      while (curr != null) {
-        
-        if (curr.data > value && curr.left != null) {
-          curr = curr.left;
-        }
-        else if (curr.data < value && curr.right != null) {
-          curr = curr.right;
-        }
-        else break;
-      }
-      const temp = Node(value);
-      if (value < curr.data) {
-        curr.left = temp;
-      }
-      else {
-        curr.right = temp;
-      }
-      return temp;
-
+    const temp = Node(value);
+    if (value < curr.data) {
+      curr.left = temp;
     }
+    else {
+      curr.right = temp;
+    }
+    return temp;
+
+  }
 
     // Smallest node in right subtree
-    const getSuccessor = (root) => {
-      let curr = root.right;
-      let parent = root;
+    const getSuccessor = (node) => {
+      let curr = node.right;
+      let parent = node;
       while (curr != null && curr.left != null) {
         parent = curr;
         curr = curr.left;
@@ -142,21 +150,21 @@ function Tree(arr) {
       return;
     }
 
-    const find = (value) => {
-      let curr = root;
-      while (curr != null) {
-        if (curr.data == value) {
-          return curr;
-        }
-        else if (curr.data < value) {
-          curr = curr.right;
-        }
-        else {
-          curr = curr.left;
-        }
+  const find = (value) => {
+    let curr = root;
+    while (curr != null) {
+      if (curr.data == value) {
+        return curr;
       }
-      return null;
+      else if (curr.data < value) {
+        curr = curr.right;
+      }
+      else {
+        curr = curr.left;
+      }
     }
+    return null;
+  }
 
     const breadthFirstTraversal = (callback) => {
       // let curr = root;
@@ -200,36 +208,36 @@ function Tree(arr) {
           curr = curr.left;
         }
         temp = stack.pop()
-        callback(temp.data);
+        callback(temp);
         curr = temp.right;
       }
     }
 
-    const preOrderTraversalRecursive = (callback, node) => {
+    const preOrderTraversalRecursive = (callback, node = root) => {
       if (node == null) {
         return null;
       }
-      callback(node.data);
+      callback(node);
       preOrderTraversalRecursive(callback, node.left);
       preOrderTraversalRecursive(callback, node.right);
     }
 
-    const inOrderTraversalRecursive = (callback, node) => {
+    const inOrderTraversalRecursive = (callback, node = root) => {
       if (node == null) {
         return null;
       }
       inOrderTraversalRecursive(callback, node.left);
-      callback(node.data);
+      callback(node);
       inOrderTraversalRecursive(callback, node.right);
     }
 
-    const postOrderTraversalRecursive = (callback, node) => {
+    const postOrderTraversalRecursive = (callback, node = root) => {
       if (node == null) {
         return null;
       }
       postOrderTraversalRecursive(callback, node.left);
       postOrderTraversalRecursive(callback, node.right);
-      callback(node.data);
+      callback(node);
     }
 
     const heightOfNode = (node) => {
@@ -273,7 +281,52 @@ function Tree(arr) {
     }
 
 
-    const prettyPrint = (node, prefix = '', isLeft = true) => {
+    const checkHeightAndBalance = (node = root) => {
+
+      if (node == null) {
+        return 0;
+      }
+      
+      const leftHeight = checkHeightAndBalance(node.left);
+      if (leftHeight == -1) {
+        return -1;
+      }
+      const rightHeight = checkHeightAndBalance(node.right);
+      if (rightHeight == -1) {
+        return -1
+      }
+
+      if (Math.abs(leftHeight-rightHeight) > 1) {
+        return -1;
+      }
+
+      return 1 + Math.max(leftHeight, rightHeight);
+
+    }
+
+    const isBalanced = () => {
+      if (checkHeightAndBalance(root) != -1) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+
+    const rebalance = () => {
+
+      const dataNodes = [];
+      const nodeAccumulator = (node) => {
+        dataNodes.push(node.data);
+      }
+      preOrderTraversalRecursive(nodeAccumulator, root);
+
+      const sortedUniqueData = sortArray(dataNodes);
+      root = arrayToBST(sortedUniqueData, 0, sortedUniqueData.length-1);
+
+    }
+
+    const prettyPrint = (node = root, prefix = '', isLeft = true) => {
         if (node === null) {
           return;
         }
@@ -287,21 +340,21 @@ function Tree(arr) {
       };
       
 
-    return {root, insert, find, deleteNode, breadthFirstTraversal, inOrderTraversal, preOrderTraversalRecursive, inOrderTraversalRecursive, postOrderTraversalRecursive, height, depth, prettyPrint};
+    return {insert, find, deleteNode, breadthFirstTraversal, inOrderTraversal, preOrderTraversalRecursive, inOrderTraversalRecursive, postOrderTraversalRecursive, height, depth, isBalanced, rebalance, prettyPrint};
 }
 
 
 let temp = Tree([1, 10, 3, 4, 6, 1, 5, 2]); // Testing with duplicates and mixed-digit numbers
 // console.log(temp.root);
-// temp.prettyPrint(temp.root);
-// temp.insert(11);
-// temp.insert(12);
+// temp.prettyPrint();
+temp.insert(11);
+temp.insert(12);
 // // temp.insert(13);
 // temp.insert(9);
 // temp.insert(8);
 // temp.insert(0);
 
-temp.prettyPrint(temp.root);
+// temp.prettyPrint();
 // temp.breadthFirstTraversal();
 // temp.inOrderTraversal();
 // console.log(temp.find(3));
@@ -319,12 +372,12 @@ temp.prettyPrint(temp.root);
 // temp.deleteNode(11);
 // temp.deleteNode(4);
 
-// temp.prettyPrint(temp.root);
+// temp.prettyPrint();
 
 
-// temp.preOrderTraversalRecursive(temp.root);
-// temp.inOrderTraversalRecursive(temp.root);
-// temp.postOrderTraversalRecursive(temp.root);
+// temp.preOrderTraversalRecursive();
+// temp.inOrderTraversalRecursive();
+// temp.postOrderTraversalRecursive();
 
 // console.log(temp.height(1));
 // console.log(temp.height(3));
@@ -332,9 +385,21 @@ temp.prettyPrint(temp.root);
 // console.log(temp.height(6));
 // console.log(temp.height(4));
 
-console.log(temp.depth(1));
-console.log(temp.depth(3));
-console.log(temp.depth(2));
-console.log(temp.depth(4));
-console.log(temp.depth(10));
-console.log(temp.depth(6));
+// console.log(temp.depth(1));
+// console.log(temp.depth(3));
+// console.log(temp.depth(2));
+// console.log(temp.depth(4));
+// console.log(temp.depth(10));
+// console.log(temp.depth(6));
+
+// console.log(temp.isBalanced());
+// console.log(temp.isBalanced());
+console.log("--- Tree Before Rebalance (Unbalanced) ---");
+temp.prettyPrint(); 
+console.log("Is Balanced:", temp.isBalanced()); 
+
+temp.rebalance();
+
+console.log("\n--- Tree After Rebalance (Balanced) ---");
+  temp.prettyPrint(); 
+  console.log("Is Balanced:", temp.isBalanced());
