@@ -232,6 +232,46 @@ function Tree(arr) {
       callback(node.data);
     }
 
+    const heightOfNode = (node) => {
+      if (node == null) {
+        return -1;
+      }
+
+      const leftHeight = heightOfNode(node.left);
+      const rightHeight = heightOfNode(node.right);
+
+      return 1 + Math.max(leftHeight, rightHeight);
+    }
+
+    // longest distance from value node to a leaf
+    const height = (value) => {
+      // Find value node
+      const node = find(value);
+      if (node == null) {
+        return null;
+      }
+      // height = 1 + max(height of left subtree, height of right subtree)
+      return heightOfNode(node);
+    }
+
+    const depth = (value) => {
+      let counter = 0;
+      let curr = root;
+      while (curr != null) {
+        if (curr.data == value) {
+          return counter;
+        }
+        else if (value < curr.data) {
+          curr = curr.left;
+        }
+        else if (value > curr.data) {
+          curr = curr.right;
+        }
+        counter++;
+      }
+      
+    }
+
 
     const prettyPrint = (node, prefix = '', isLeft = true) => {
         if (node === null) {
@@ -247,7 +287,7 @@ function Tree(arr) {
       };
       
 
-    return {root, insert, find, deleteNode, breadthFirstTraversal, inOrderTraversal, preOrderTraversalRecursive, inOrderTraversalRecursive, postOrderTraversalRecursive, prettyPrint};
+    return {root, insert, find, deleteNode, breadthFirstTraversal, inOrderTraversal, preOrderTraversalRecursive, inOrderTraversalRecursive, postOrderTraversalRecursive, height, depth, prettyPrint};
 }
 
 
@@ -286,3 +326,15 @@ temp.prettyPrint(temp.root);
 // temp.inOrderTraversalRecursive(temp.root);
 // temp.postOrderTraversalRecursive(temp.root);
 
+// console.log(temp.height(1));
+// console.log(temp.height(3));
+// console.log(temp.height(2));
+// console.log(temp.height(6));
+// console.log(temp.height(4));
+
+console.log(temp.depth(1));
+console.log(temp.depth(3));
+console.log(temp.depth(2));
+console.log(temp.depth(4));
+console.log(temp.depth(10));
+console.log(temp.depth(6));
